@@ -66,6 +66,7 @@ setup(
     },
     install_requires=[
         'pycryptodome',
-        'msgpack-python'
+        'msgpack-python',
+        'pillow'
     ]
 )

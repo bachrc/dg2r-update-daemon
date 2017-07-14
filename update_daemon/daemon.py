@@ -25,7 +25,16 @@ def scan():
     path = args.path
 
     path_to_file = Path(path / "UPDATE.dg2r")
-    if path_to_file.is_file()
+    if path_to_file.is_file():
+        try:
+            update = UpdateObject.load(path_to_file)
+
+            
+
+        except Exception as e:
+
+
+
 
 
 if __name__ == '__main__':
