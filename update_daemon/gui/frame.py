@@ -1,12 +1,11 @@
 import os
 import tkinter as tk
-from copy import copy
 from queue import Queue, LifoQueue
 from tkinter.font import Font
 
 from PIL import Image, ImageTk
 
-from update_daemon import STATE
+from update_daemon import STATE, settings
 from update_daemon.threads import Update
 
 
@@ -27,7 +26,6 @@ def vertical_gradient_rectangle(canvas, x0, y0, x1, y1, start_red, start_green, 
 
 
 class Application(tk.Tk):
-
     def __init__(self, app_state):
         super().__init__()
         self.overrideredirect(True)
@@ -68,13 +66,14 @@ class Application(tk.Tk):
         _, y1, _, y2 = self.canvas.bbox(self.status_text)
         self.text_height = y2 - y1
 
+        self.notify_rect = None
+        self.image_notif = None
+
         self.canvas.move(self.status_text, 0, int(self.text_height/2))
         self.canvas.after(2000, self.waiting_for_update)
 
 
     def waiting_for_update(self):
-
-
         self.canvas.itemconfig(self.status_text, text="La mise à jour va commencer.")
         self.move(self.status_text, self.h - self.text_height, 1, 5,
                   callback=lambda: self.after(2000, self.place_loading))
@@ -94,10 +93,47 @@ class Application(tk.Tk):
             self.canvas.itemconfig(self.status_text, text="Veuillez patienter%s" % ("." * dot))
             self.after(500, lambda: self.animate_dot((dot + 1) % 4))
         else:
-            print("NON YA PU")
+            self.move(self.status_text, self.h + self.text_height, 1, 5, self.draw_smooth_rectangle)
 
+    # SUCCESS OR FAIL NOTIFICATIONS
+
+    def draw_smooth_rectangle(self):
+        self.notify_rect = self.canvas.create_rectangle(0, int(self.h / 2), self.w, int(self.h/2), fill='#dbebff',
+                                                        outline="")
+        self.move_rectangle(self.notify_rect, self.h * 0.5, 1, 5, self.draw_explainations)
+
+    def draw_explainations(self):
+        if self.update_state.queue[-1] == STATE.SUCCESS:
+            image_result = Image.open("%s/success.png" % os.path.dirname(__file__))
+            loading_time = settings.seconds_before_reboot
+            message = "L'update a été déployée avec succès ! Redémarrage dans %d secondes." % loading_time
+        else:
+            image_result = Image.open("%s/error.png" % os.path.dirname(__file__))
+            loading_time = settings.seconds_before_quit
+            message = "L'update a été déployée avec succès ! Redémarrage dans %d secondes." % loading_time
+
+        image_result.thumbnail((int(self.w / 4), int(self.h / 3)))
+        self.image_notif = ImageTk.PhotoImage(image_result)
+
+        self.canvas.create_image(self.w / 4, self.h / 2, anchor=tk.CENTER, image=self.image_notif)
+
+        self.canvas.create_text(self.w * 0.6, self.h * 0.5,
+                                anchor=tk.CENTER,
+                                text=message,
+                                fill="black",
+                                justify=tk.CENTER,
+                                font=Font(size=15),
+                                width=self.w * 0.5)
 
     def move(self, text_id, destination_y, step, speed, callback=None):
+        """
+        Method to move a text entity on the canvas
+        :param text_id: The identifier of the text entity
+        :param destination_y: The y destination of the text.
+        :param step: The pixel step to move the text at each iteration
+        :param speed: The number of ms between each iteration
+        :param callback: Function to call when the text reached destination
+        """
         x, y = self.canvas.coords(text_id)
         distance = abs(y - destination_y)
 
@@ -115,6 +151,28 @@ class Application(tk.Tk):
             self.canvas.move(text_id, 0, (step * way))
             self.canvas.after(speed, lambda: self.move(text_id, destination_y, step, speed, callback))
 
+    def move_rectangle(self, rect_id, height_dest, step, speed, callback=None):
+        x0, y0, x1, y1 = self.canvas.coords(rect_id)
+
+        height = abs(y0 - y1)
+        remaining = abs(height - height_dest)
+
+        if height < height_dest:
+            if remaining <= (step*2):
+                self.canvas.coords(rect_id, x0, y0 - remaining, x1, y1 + remaining)
+                callback()
+            else:
+                self.canvas.coords(rect_id, x0, y0 - step, x1, y1 + step)
+                self.after(speed, lambda: self.move_rectangle(rect_id, height_dest, step, speed, callback))
+        elif height > height_dest:
+            if remaining <= (step*2):
+                self.canvas.delete(rect_id)
+                callback()
+            else:
+                self.canvas.coords(rect_id, x0, y0 + step, x1, y1 - step)
+                self.after(speed, lambda: self.move_rectangle(rect_id, height_dest, step, speed, callback))
+        else:
+            callback()
 
 if __name__ == '__main__':
     q = LifoQueue()

@@ -8,3 +8,7 @@ zyFYAKWuviJWcgA4xW65BVdw5yqdFnCc9OfBdn8SbGkJrircEhombyC1fErQeGMclWzFf4Du3EUg8uyz
 0xtm99PJgO3q92Vh/CZ1lpZST1m+t/8qQJ7mZHAt1LaNG7MNXWqXu3MzolxWKEZeORmSSjy7AZZLn5d5SVfbUd5kJj8BgtC
 /o3uVvHFrOcNZHmYFWS+PEQGeNJQQKh7tk6H1dTm3WxAMvOhw==
 """
+
+seconds_before_reboot = 20
+
+seconds_before_quit = 10

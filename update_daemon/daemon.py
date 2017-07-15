@@ -1,5 +1,6 @@
 import argparse
 from pathlib import Path
+from queue import LifoQueue
 
 from update_daemon import STATE
 from update_daemon.data import UpdateObject
@@ -27,19 +28,15 @@ def scan():
 
     path_to_file = Path(path / "UPDATE.dg2r")
     if path_to_file.is_file():
-        try:
-            update_file = UpdateObject.load(path_to_file)
-            update_state = STATE.DISPLAYING
+        q = LifoQueue()
+        q.put(STATE.DISPLAYING)
 
-            th_update = Update(update_state)
-            app = Application(update_state)
+        th_update = Update(q, path_to_file)
+        th_update.start()
 
-            app.mainloop()
+        app = Application(q)
 
-        except Exception as e:
-            print("rip")
-
-
+        app.mainloop()
 
 
 if __name__ == '__main__':
