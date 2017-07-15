@@ -1,9 +1,10 @@
-import sys
 import argparse
-
 from pathlib import Path
 
+from update_daemon import STATE
 from update_daemon.data import UpdateObject
+from update_daemon.gui.frame import Application
+from update_daemon.threads import Update
 
 
 def path_to_update(path):
@@ -27,12 +28,16 @@ def scan():
     path_to_file = Path(path / "UPDATE.dg2r")
     if path_to_file.is_file():
         try:
-            update = UpdateObject.load(path_to_file)
+            update_file = UpdateObject.load(path_to_file)
+            update_state = STATE.DISPLAYING
 
-            
+            th_update = Update(update_state)
+            app = Application(update_state)
+
+            app.mainloop()
 
         except Exception as e:
-
+            print("rip")
 
 
 
