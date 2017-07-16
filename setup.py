@@ -11,14 +11,14 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='DG2R Armadillo Update Tool',
+    name='DG2R Armadillo Update Daemon',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.0.1',
+    version='0.1a',
 
-    description='GUI to sign and prepare updates for DG2R\'s Armadillos',
+    description='Daemon which reads update, and applies it.',
     long_description=long_description,
 
     # The project's main homepage.
@@ -55,18 +55,18 @@ setup(
 
     # What does your project relate to?
     keywords='pgp update armadillo linux',
-
+    install_requires=[
+        'pycryptodome',
+        'msgpack-python',
+        'pillow'
+    ],
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'dg2r_update_daemon = update_tool.__main__:main'
+            'dg2r_update_daemon = update_daemon.daemon:scan'
         ]
     },
-    install_requires=[
-        'pycryptodome',
-        'msgpack-python',
-        'pillow'
-    ]
+
 )
