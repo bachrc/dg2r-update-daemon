@@ -32,7 +32,7 @@ class Application(tk.Tk):
 
         self.attributes('-fullscreen', True)
 
-        w, h = self.winfo_screenwidth(), self.winfo_screenheight()
+        self.w, self.h = self.winfo_screenwidth(), self.winfo_screenheight()
         # self.w, self.h = 800, 480
 
         self.canvas = tk.Canvas(self, width=self.w, height=self.h, highlightthickness=0)
