@@ -30,10 +30,10 @@ class Application(tk.Tk):
         super().__init__()
         self.overrideredirect(True)
 
-        # self.attributes('-fullscreen', True)
+        self.attributes('-fullscreen', True)
 
-        # w, h = self.winfo_screenwidth(), self.winfo_screenheight()
-        self.w, self.h = 800, 480
+        w, h = self.winfo_screenwidth(), self.winfo_screenheight()
+        # self.w, self.h = 800, 480
 
         self.canvas = tk.Canvas(self, width=self.w, height=self.h, highlightthickness=0)
         vertical_gradient_rectangle(self.canvas, 0, 0, self.w, self.h, 242, 242, 255, 178, 212, 242)
