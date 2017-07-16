@@ -63,6 +63,7 @@ setup(
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
     packages=find_packages(),
+    include_package_data=True,
     entry_points={
         'console_scripts': [
             'dg2r_update_daemon = update_daemon.daemon:scan'

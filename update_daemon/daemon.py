@@ -3,7 +3,6 @@ from pathlib import Path
 from queue import LifoQueue
 
 from update_daemon import STATE
-from update_daemon.data import UpdateObject
 from update_daemon.gui.frame import Application
 from update_daemon.threads import Update
 
@@ -24,7 +23,8 @@ def scan():
 
     args = parser.parse_args()
 
-    path = args.path
+    path = args.path[0]
+    print(path)
 
     path_to_file = Path(path / "UPDATE.dg2r")
     if path_to_file.is_file():
