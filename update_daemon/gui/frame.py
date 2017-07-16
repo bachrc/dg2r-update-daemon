@@ -30,8 +30,6 @@ class Application(tk.Tk):
         super().__init__()
         self.overrideredirect(True)
 
-        self.attributes('-fullscreen', True)
-
         self.w, self.h = self.winfo_screenwidth(), self.winfo_screenheight()
         # self.w, self.h = 800, 480
 
