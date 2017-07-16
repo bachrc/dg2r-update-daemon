@@ -68,6 +68,8 @@ class Application(tk.Tk):
 
         self.notify_rect = None
         self.image_notif = None
+        self.loading_rect = None
+        self.loading_rect_fill = None
 
         self.canvas.move(self.status_text, 0, int(self.text_height/2))
         self.canvas.after(2000, self.waiting_for_update)
@@ -106,11 +108,12 @@ class Application(tk.Tk):
         if self.update_state.queue[-1] == STATE.SUCCESS:
             image_result = Image.open("%s/success.png" % os.path.dirname(__file__))
             loading_time = settings.seconds_before_reboot
-            message = "L'update a été déployée avec succès ! Redémarrage dans %d secondes." % loading_time
+            message = "La mise à jour a été déployée avec succès ! Redémarrage dans %d secondes." % loading_time
         else:
             image_result = Image.open("%s/error.png" % os.path.dirname(__file__))
             loading_time = settings.seconds_before_quit
-            message = "L'update a été déployée avec succès ! Redémarrage dans %d secondes." % loading_time
+            message = "Le déploiement de la mise à jour a échoué... Veuillez contacter DG2E. Fermeture " \
+                      "du logiciel dans %d secondes." % loading_time
 
         image_result.thumbnail((int(self.w / 4), int(self.h / 3)))
         self.image_notif = ImageTk.PhotoImage(image_result)
@@ -124,6 +127,22 @@ class Application(tk.Tk):
                                 justify=tk.CENTER,
                                 font=Font(size=15),
                                 width=self.w * 0.5)
+
+        self.loading_rect = self.canvas.create_rectangle(int(self.w * 0.25), int(self.h * 0.8),
+                                                         int(self.w * 0.75), int(self.h * 0.85),
+                                                         fill='',
+                                                         outline="#2778f9",
+                                                         width=3)
+
+        self.loading_rect_fill = self.canvas.create_rectangle(int(self.w * 0.25), int(self.h * 0.8),
+                                                              int(self.w * 0.25), int(self.h * 0.85),
+                                                              fill='#2778f9',
+                                                              outline="")
+
+        self.fill_loading(self.loading_rect_fill, 50, loading_time * 1000)
+
+
+    # CANVAS AFTER FUNCTIONS
 
     def move(self, text_id, destination_y, step, speed, callback=None):
         """
@@ -173,6 +192,17 @@ class Application(tk.Tk):
                 self.after(speed, lambda: self.move_rectangle(rect_id, height_dest, step, speed, callback))
         else:
             callback()
+
+    def fill_loading(self, rect_id, speed, total_load_time, now=0):
+        x0c, y0c, x1c, y1c = self.canvas.coords(self.loading_rect)
+
+        self.canvas.coords(rect_id, x0c, y0c, x0c + (now / total_load_time) * (abs(x0c - x1c)), y1c)
+
+        if abs(total_load_time - now) < speed:
+            # os.system('reboot')
+            print("Aah, le dessert")
+        else:
+            self.after(speed, lambda: self.fill_loading(rect_id, speed, total_load_time, now+speed))
 
 if __name__ == '__main__':
     q = LifoQueue()
