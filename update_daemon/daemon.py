@@ -2,6 +2,8 @@ import argparse
 from pathlib import Path
 from queue import LifoQueue
 
+import logging
+
 from update_daemon import STATE
 from update_daemon.gui.frame import Application
 from update_daemon.threads import Update
@@ -18,6 +20,10 @@ def path_to_update(path):
 
 
 def scan():
+    logging.basicConfig(filename='/home/pi/logDG2R.out', level=logging.DEBUG)
+
+    logging.debug('This message should go to the log file')
+
     parser = argparse.ArgumentParser(description="Scans given directory in order to change current Armadillo app")
     parser.add_argument('path', nargs=1, help="The mounted usb key folder path", type=path_to_update)
 

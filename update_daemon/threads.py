@@ -26,10 +26,6 @@ class Update(Thread):
             self.state.put(STATE.ERROR)
 
     def update(self):
-        logging.basicConfig(filename='log.out', level=logging.DEBUG)
-
-        logging.debug('This message should go to the log file')
-
         try:
             update_file = UpdateObject.load(self.path_to_file)
             update_file.unzip_folder()
