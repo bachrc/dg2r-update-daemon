@@ -1,6 +1,6 @@
 import os
 import tkinter as tk
-from queue import Queue, LifoQueue
+from queue import LifoQueue
 from tkinter.font import Font
 
 from PIL import Image, ImageTk
@@ -30,8 +30,8 @@ class Application(tk.Tk):
         super().__init__()
         self.overrideredirect(True)
 
-        self.w, self.h = self.winfo_screenwidth(), self.winfo_screenheight()
-        # self.w, self.h = 800, 480
+        # self.w, self.h = self.winfo_screenwidth(), self.winfo_screenheight()
+        self.w, self.h = 800, 480
 
         self.canvas = tk.Canvas(self, width=self.w, height=self.h, highlightthickness=0)
         vertical_gradient_rectangle(self.canvas, 0, 0, self.w, self.h, 242, 242, 255, 178, 212, 242)
@@ -110,7 +110,7 @@ class Application(tk.Tk):
         else:
             image_result = Image.open("%s/error.png" % os.path.dirname(__file__))
             loading_time = settings.seconds_before_quit
-            message = "Le déploiement de la mise à jour a échoué... Veuillez contacter DG2E. Fermeture " \
+            message = "Le déploiement de la mise à jour a échoué... Veuillez contacter DG2R. Fermeture " \
                       "du logiciel dans %d secondes." % loading_time
 
         image_result.thumbnail((int(self.w / 4), int(self.h / 3)))
@@ -197,8 +197,7 @@ class Application(tk.Tk):
         self.canvas.coords(rect_id, x0c, y0c, x0c + (now / total_load_time) * (abs(x0c - x1c)), y1c)
 
         if abs(total_load_time - now) < speed:
-            # os.system('reboot')
-            print("Aah, le dessert")
+            os.system('reboot')
         else:
             self.after(speed, lambda: self.fill_loading(rect_id, speed, total_load_time, now+speed))
 
@@ -206,7 +205,7 @@ if __name__ == '__main__':
     q = LifoQueue()
     q.put(STATE.DISPLAYING)
 
-    th_update = Update(q)
+    th_update = Update(q, "/home/bachrc/Documents/UPDATE.dg2r")
     th_update.start()
 
     app = Application(q)

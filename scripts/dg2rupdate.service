@@ -1,0 +1,13 @@
+[Unit]
+Description=Agent de mise à jour DG2R
+Requires=media-pi-DG2R.mount
+After=media-pi-DG2R.mount
+
+[Service]
+Environment=XAUTHORITY=/home/pi/.Xauthority
+Environment=DISPLAY=:0
+User=pi
+ExecStart=/usr/local/bin/scan_for_update.sh /media/pi/DG2R
+
+[Install]
+WantedBy=media-pi-DG2R.mount

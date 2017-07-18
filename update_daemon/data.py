@@ -1,12 +1,15 @@
+import base64
 import io
 
 import shutil
 import traceback
 import zipfile
 
-import msgpack
 from pathlib import Path
-from update_daemon import crypto
+
+import pickle
+
+from update_daemon.crypto import crypto
 
 
 class UpdateObject:
@@ -23,20 +26,26 @@ class UpdateObject:
         if not file.is_file():
             raise Exception("The path doesn't leads to a file.")
         try:
-            data = msgpack.unpack(file.open('rb'))
-            return UpdateObject(**data)
+            data = pickle.load(file.open('rb'))
+            print(data)
+
+            return UpdateObject(data['zip'], data['signature'], data['startup'],
+                                data['destination_folder'], data['autostart_file'])
         except:
             traceback.print_exc()
             raise Exception("The file can't be read.")
 
     def unzip_folder(self):
-        if crypto.is_file_verified(self.zip, self.signature):
+        if crypto.is_file_verified(self.zip.getvalue(), self.signature):
             # We delete the folder recursively, and then recreate it
             dest = Path(self.destination_folder)
-            shutil.rmtree(str(dest))
+            if dest.exists():
+                shutil.rmtree(self.destination_folder)
             dest.mkdir(parents=True, exist_ok=True)
 
-            zip = zipfile.ZipFile(io.BytesIO(self.zip), "rb", zipfile.ZIP_DEFLATED)
-            zip.extractall(path=dest)
+            zip_file = zipfile.ZipFile(self.zip, "r", zipfile.ZIP_DEFLATED)
+            zip_file.extractall(path=self.destination_folder)
 
-            zip.close()
+            zip_file.close()
+        else:
+            raise Exception("Signature du fichier invalide.")

@@ -16,7 +16,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.1a',
+    version='0.1rc1',
 
     description='Daemon which reads update, and applies it.',
     long_description=long_description,
@@ -37,7 +37,7 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
 
         # Indicate who your project is intended for
         'Intended Audience :: Maintainers of DG2R Armadillo\'s structure',
@@ -57,7 +57,6 @@ setup(
     keywords='pgp update armadillo linux',
     install_requires=[
         'pycryptodome',
-        'msgpack-python',
         'pillow'
     ],
     # You can just specify the packages manually here if your project is
