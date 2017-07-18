@@ -197,7 +197,7 @@ class Application(tk.Tk):
         self.canvas.coords(rect_id, x0c, y0c, x0c + (now / total_load_time) * (abs(x0c - x1c)), y1c)
 
         if abs(total_load_time - now) < speed:
-            os.system('reboot')
+            os.system('sudo reboot')
         else:
             self.after(speed, lambda: self.fill_loading(rect_id, speed, total_load_time, now+speed))
 
