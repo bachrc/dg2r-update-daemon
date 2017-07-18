@@ -1,6 +1,7 @@
 import traceback
 from threading import Thread
 from time import sleep
+import logging
 
 from update_daemon import STATE
 from update_daemon.data import UpdateObject
@@ -25,6 +26,10 @@ class Update(Thread):
             self.state.put(STATE.ERROR)
 
     def update(self):
+        logging.basicConfig(filename='log.out', level=logging.DEBUG)
+
+        logging.debug('This message should go to the log file')
+
         try:
             update_file = UpdateObject.load(self.path_to_file)
             update_file.unzip_folder()
@@ -38,5 +43,5 @@ class Update(Thread):
             f.close()
 
         except Exception as e:
-            traceback.print_exc()
+            logging.exception("Ca s'est pas très bien passé..")
             raise
