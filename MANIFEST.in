@@ -1,1 +1,2 @@
 recursive-include update_daemon/gui *
+recursive-include update_daemon/crypto *
