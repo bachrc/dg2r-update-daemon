@@ -15,8 +15,6 @@ The trigger
 This application isn't a daemon strictly speaking, but is triggered by a service waiting for the mount of a removable
 usb device called `DG2R`.
 
-.. literalinclude:: /scripts/dg2rupdate.service
-
 Thanks to the `automount`, when the DG2R drive will be mounted, it will start a bash script verifying if the
 environment's ready as the specified user. The user MUST be the one logged in, or else the application won't show up.
 
@@ -66,6 +64,8 @@ When it's done, you should launch the updater's install :
 
 .. code-block:: bash
 
-    python setup.py install
+    sudo update
+    sudo apt-get install libjpeg-dev
+    sudo python setup.py install
 
 Once it's finished, you could launch `dg2r_update_daemon <MOUNTED_PATH>` from anywhere.
