@@ -1,7 +1,7 @@
 DG2R Update daemon
 ==================
 
-This script is called everytime there's an USB key plugged in the device. If there's an `UPDATE.dg2r` file in it, then
+This script is called everytime there's an USB key plugged in the device. If there's an ``UPDATE.dg2r`` file in it, then
 it'll read it, extract it and configure the Armadillo.
 
 :Developer: Yohann Bacha
@@ -13,12 +13,31 @@ The trigger
 -----------
 
 This application isn't a daemon strictly speaking, but is triggered by a service waiting for the mount of a removable
-usb device called `DG2R`.
+usb device called ``DG2R``.
 
-Thanks to the `automount`, when the DG2R drive will be mounted, it will start a bash script verifying if the
+Thanks to the ``automount``, when the DG2R drive will be mounted, it will start a bash script verifying if the
 environment's ready as the specified user. The user MUST be the one logged in, or else the application won't show up.
 
-Of course, this systemd config file should be placed under `/etc/systemd/system/dg2rupdate.service`.
+Of course, this systemd config file should be placed under ``/etc/systemd/system/dg2rupdate.service``.
+
+.. code-block:: yaml
+
+    [Unit]
+    Description=Agent de mise à jour DG2R
+    Requires=media-<user>-DG2R.mount
+    After=media-<user>-DG2R.mount
+
+    [Service]
+    Environment=XAUTHORITY=/home/<user>/.Xauthority
+    Environment=DISPLAY=:0
+    User=<user>
+    ExecStart=/usr/local/bin/scan_for_update.sh /media/<user>/DG2R
+
+    [Install]
+    WantedBy=media-<user>-DG2R.mount
+
+The auto-mounted key will always be located under ``/media/<user>``, where ``<user>`` is the name of the currently
+logged user on the Armadillo.
 
 To enable this new service, and permit him to be triggered on a USB key called DG2R, type the following command
 with root privileges :
@@ -37,9 +56,9 @@ The launcher
 ------------
 
 The bash script launching the updater, itself launched by the previous service, is preferably located in
-`/usr/local/bin/scan_for_update.sh`. Don't forget to make it executable with `chmod +x scan_for_update.sh`.
+``/usr/local/bin/scan_for_update.sh``. Don't forget to make it executable with ``chmod +x scan_for_update.sh``.
 
-It takes a parameter : the mounted key location. After verifying if a `UPDATE.dg2r` exist on it, we finally launch the
+It takes a parameter : the mounted key location. After verifying if a ``UPDATE.dg2r`` exist on it, we finally launch the
 updater, which must have been previously installed.
 
 The updater
@@ -68,4 +87,4 @@ When it's done, you should launch the updater's install :
     sudo apt-get install libjpeg-dev
     sudo python setup.py install
 
-Once it's finished, you could launch `dg2r_update_daemon <MOUNTED_PATH>` from anywhere.
+Once it's finished, you could launch ``dg2r_update_daemon <MOUNTED_PATH>`` from anywhere.
